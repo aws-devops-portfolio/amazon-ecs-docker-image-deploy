@@ -43,7 +43,7 @@ module "container_services" {
   task_count         = 1
   execution_role_arn = module.iam_fargate.execution_role_arn
   container_port     = 8080
-  container_memory   = 128
+  container_memory   = 512
 }
 
 module "security_groups" {
