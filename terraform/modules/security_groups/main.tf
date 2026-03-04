@@ -6,8 +6,8 @@ resource "aws_security_group" "alb_sg" {
 
   tags = {
     Name = "web_alg_sg"
-  }  
-  
+  }
+
 }
 
 # Public ALB is required for demo project
@@ -47,13 +47,13 @@ resource "aws_security_group_rule" "alb_egress_rule" {
 
 # Security Group for ECS tasks
 resource "aws_security_group" "ecs_task_sg" {
-    name = "ecs_task_sg"
-    description = "ECS Task security group"
-    vpc_id = var.vpc_id
+  name        = "ecs_task_sg"
+  description = "ECS Task security group"
+  vpc_id      = var.vpc_id
 
-    tags = {
-        Name = "ecs_task_sg"
-    }  
+  tags = {
+    Name = "ecs_task_sg"
+  }
 
 }
 

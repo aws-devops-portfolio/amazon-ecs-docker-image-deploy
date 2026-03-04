@@ -14,6 +14,6 @@ variable "https_port" {
 }
 
 variable "vpc_id" {
-    type = string
-    description = "Main VPC id"
+  type        = string
+  description = "Main VPC id"
 }

@@ -1,6 +1,6 @@
 # ECS Task execution role
 resource "aws_iam_role" "task_execution_role" {
-  name               = "${var.task_service_role}ECSTasksExecutionRole" 
+  name               = "${var.task_service_role}ECSTasksExecutionRole"
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.tasks_service_assume_policy.json
 }
@@ -23,7 +23,7 @@ resource "aws_iam_role_policy_attachment" "task_execution_role_attachment" {
 
 # ECS Task Role
 resource "aws_iam_role" "task_service_role" {
-  name               = "${var.task_service_role}ECSTasksServiceRole" 
+  name               = "${var.task_service_role}ECSTasksServiceRole"
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.tasks_service_assume_policy.json
 }

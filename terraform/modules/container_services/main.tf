@@ -15,10 +15,10 @@ resource "aws_ecs_task_definition" "task_definition" {
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.container_cpu
-  memory                   =  var.container_memory
+  memory                   = var.container_memory
   task_role_arn            = var.task_role_arn
-  execution_role_arn       = var.execution_role_arn  
-  
+  execution_role_arn       = var.execution_role_arn
+
   container_definitions = <<DEFINITION
     [
       {
@@ -69,5 +69,5 @@ resource "aws_ecs_service" "service" {
     target_group_arn = var.target_group_id
     container_name   = var.container_name
     container_port   = var.container_port
-  } 
+  }
 }
