@@ -33,7 +33,7 @@ resource "aws_ecs_task_definition" "task_definition" {
           },
         "cpu": ${var.container_cpu},
         "memory": ${var.container_memory},
-        "image": "${var.ecr_repo_name}",
+        "image": "${var.ecr_repo_url}:latest",
         "name": "${var.container_name}",
         "networkMode": "awsvpc",
         "portMappings": [

@@ -20,6 +20,10 @@ variable "ecr_repo_name" {
   type        = string
   default     = "product-app"
 }
+variable "ecr_repo_url" {
+  description = "ECR repository URL"
+  type        = string
+}
 variable "container_name" {
   description = "Container name"
   type        = string

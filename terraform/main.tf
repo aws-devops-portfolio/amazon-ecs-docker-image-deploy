@@ -44,6 +44,7 @@ module "container_services" {
   execution_role_arn = module.iam_fargate.execution_role_arn
   container_port     = 8080
   container_memory   = 512
+  ecr_repo_url       = module.container_repository.ecr_repo_url
 }
 
 module "security_groups" {
