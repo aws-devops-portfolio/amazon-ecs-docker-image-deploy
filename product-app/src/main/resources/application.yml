@@ -1,0 +1,2 @@
+app:
+  product-file: classpath:products.txt
