@@ -57,5 +57,5 @@ module "load_balancer" {
   subnets   = data.aws_subnets.default.ids
   alb_sg_id = module.security_groups.alb_sg_id
   port      = 8080
-  protocol  = "HTTPS"
+  protocol  = "HTTP"
 }
