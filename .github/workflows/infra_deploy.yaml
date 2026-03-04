@@ -1,4 +1,4 @@
-name: Terraform CI/CD
+name: Infrastructure CI/CD
 
 permissions:
   id-token: write
@@ -22,7 +22,7 @@ defaults:
 
 jobs:
   terraform:
-    name: 'Terraform Lint, Security Check, and Deploy'
+    name: 'Terraform deployment'
     runs-on: ubuntu-latest
 
     env:
