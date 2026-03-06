@@ -19,31 +19,33 @@ resource "aws_ecs_task_definition" "task_definition" {
   task_role_arn            = var.task_role_arn
   execution_role_arn       = var.execution_role_arn
 
-  container_definitions = <<DEFINITION
-    [
-      {
-        "logConfiguration": {
-            "logDriver": "awslogs",
-            "secretOptions": null,
-            "options": {
-              "awslogs-group": "/ecs/task-definition-${var.container_name}",
-              "awslogs-region": "${var.region}",
-              "awslogs-stream-prefix": "ecs"
-            }
-          },
-        "cpu": ${var.container_cpu},
-        "memory": ${var.container_memory},
-        "image": "${var.ecr_repo_url}:latest",
-        "name": "${var.container_name}",
-        "portMappings": [
-          {
-            "containerPort": ${var.container_port},
-            "hostPort": ${var.container_port}
-          }
-        ]
+  depends_on = [aws_cloudwatch_log_group.TaskDF-Log_Group]
+
+  container_definitions = jsonencode([
+    {
+      name  = var.container_name
+      image = "${var.ecr_repo_url}:latest"
+
+      cpu    = var.container_cpu
+      memory = var.container_memory
+
+      portMappings = [
+        {
+          containerPort = var.container_port
+          hostPort      = var.container_port
         }
-    ]
-    DEFINITION
+      ]
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = "/ecs/task-definition-${var.container_name}"
+          awslogs-region        = var.region
+          awslogs-stream-prefix = "ecs"
+        }
+      }
+    }
+  ])
 }
 
 resource "aws_cloudwatch_log_group" "TaskDF-Log_Group" {
