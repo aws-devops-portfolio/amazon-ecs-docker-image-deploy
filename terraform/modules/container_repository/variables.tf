@@ -1,5 +1,5 @@
 variable "ecr_name" {
   description = "ECR repository name"
   type        = string
-  default     = "product-app"
+  default     = "product-app-ecr"
 }

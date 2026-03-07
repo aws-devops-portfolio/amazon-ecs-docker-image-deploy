@@ -1,6 +1,6 @@
 # load balancer
 resource "aws_lb" "web_alb" {
-  name               = "test-app-alb"
+  name               = "product-app-alb"
   load_balancer_type = "application"
   subnets            = var.subnets
   security_groups    = [var.alb_sg_id]

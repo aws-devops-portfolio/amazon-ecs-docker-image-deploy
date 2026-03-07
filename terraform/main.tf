@@ -24,8 +24,6 @@ module "iam_fargate" {
 
 module "container_repository" {
   source   = "./modules/container_repository"
-  ecr_name = "app_ecr"
-
 }
 
 module "container_services" {
