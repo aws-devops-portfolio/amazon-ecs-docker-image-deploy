@@ -23,7 +23,7 @@ module "iam_fargate" {
 }
 
 module "container_repository" {
-  source   = "./modules/container_repository"
+  source = "./modules/container_repository"
 }
 
 module "container_services" {
