@@ -35,6 +35,7 @@ public class ProductService {
     }
 
     public List<String> getProducts() {
+        log.info("Retrieving a list of products");
         return Collections.unmodifiableList(productList);
     }
 
