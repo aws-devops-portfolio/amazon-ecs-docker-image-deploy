@@ -2,42 +2,42 @@ name: Application CI/CD
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
     paths:
       - "src/**"
       - "pom.xml"
       - "Dockerfile"
+
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
     paths:
       - "src/**"
       - "pom.xml"
       - "Dockerfile"
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
-    env:
-      AWS_REGION: 'us-east-1'
 
     permissions:
       id-token: write
       contents: read
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
 
-      - name: Build and run tests
+      - name: Build with Maven
         run: mvn clean verify
 
       - name: Configure AWS credentials
@@ -45,21 +45,19 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/GitHubAction-Role
-          role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
+      - name: Login to ECR
         if: github.event_name == 'push'
+        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build Docker image
         if: github.event_name == 'push'
         run: |
-          docker build -t ${{ secrets.ECR_REPOSITORY }}:${{ github.sha }} .
-          docker tag -t ${{ secrets.ECR_REPOSITORY }}:${{ github.sha }} \
-            ${{ secrets.ACCOUNT_ID }}.dkr.ecr.$ {{ AWS_REGION }}.amazon.com/  ${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
+          docker build -t ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }} .
 
       - name: Push Docker image
         if: github.event_name == 'push'
         run: |
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazon.com/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
