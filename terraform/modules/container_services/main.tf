@@ -18,6 +18,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   memory                   = var.container_memory
   task_role_arn            = var.task_role_arn
   execution_role_arn       = var.execution_role_arn
+  assign_public_ip         = false
 
   depends_on = [aws_cloudwatch_log_group.TaskDF-Log_Group]
 
