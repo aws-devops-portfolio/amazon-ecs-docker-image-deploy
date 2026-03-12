@@ -1,25 +1,11 @@
 
-data "aws_vpc" "default" {
-  default = true
-}
-
-data "aws_subnets" "default" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
-}
-
-data "aws_subnets" "private_subnets" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
+module "network" {
+  source = "./modules/network"
+  vpc_cidr = var.vpc_cidr
 }
 
 module "iam_fargate" {
   source = "./modules/iam_fargate"
-
 }
 
 module "container_repository" {
@@ -30,7 +16,7 @@ module "container_services" {
   source             = "./modules/container_services"
   target_group_id    = module.load_balancer.target_group_id
   task_role_arn      = module.iam_fargate.task_role_arn
-  private_subnets    = data.aws_subnets.private_subnets.ids
+  private_subnets    = module.network.public_subnet_ids
   region             = "us-east-1"
   ecs_sg_id          = module.security_groups.ecs_task_sg
   task_count         = 1
@@ -42,13 +28,13 @@ module "container_services" {
 
 module "security_groups" {
   source = "./modules/security_groups"
-  vpc_id = data.aws_vpc.default.id
+  vpc_id = module.network.vpc_id
 }
 
 module "load_balancer" {
   source    = "./modules/load_balancer"
-  vpc_id    = data.aws_vpc.default.id
-  subnets   = data.aws_subnets.default.ids
+  vpc_id    = module.network.vpc_id
+  subnets   = module.network.public_subnet_ids
   alb_sg_id = module.security_groups.alb_sg_id
   port      = 8080
   protocol  = "HTTP"
