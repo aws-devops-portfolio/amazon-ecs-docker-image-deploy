@@ -60,8 +60,7 @@ resource "aws_ecs_service" "service" {
   task_definition  = aws_ecs_task_definition.task_definition.arn
   desired_count    = var.task_count
   launch_type      = "FARGATE"
-  assign_public_ip = false
-
+  
   network_configuration {
     security_groups = [var.ecs_sg_id]
     subnets         = var.private_subnets
