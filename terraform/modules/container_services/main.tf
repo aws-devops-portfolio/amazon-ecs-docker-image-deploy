@@ -17,8 +17,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   cpu                      = var.container_cpu
   memory                   = var.container_memory
   task_role_arn            = var.task_role_arn
-  execution_role_arn       = var.execution_role_arn
-  assign_public_ip         = false
+  execution_role_arn       = var.execution_role_arn  
 
   depends_on = [aws_cloudwatch_log_group.TaskDF-Log_Group]
 
@@ -56,11 +55,12 @@ resource "aws_cloudwatch_log_group" "TaskDF-Log_Group" {
 
 # ECS service
 resource "aws_ecs_service" "service" {
-  name            = "${var.container_name}-service"
-  cluster         = aws_ecs_cluster.ecs_cluster.id
-  task_definition = aws_ecs_task_definition.task_definition.arn
-  desired_count   = var.task_count
-  launch_type     = "FARGATE"
+  name             = "${var.container_name}-service"
+  cluster          = aws_ecs_cluster.ecs_cluster.id
+  task_definition  = aws_ecs_task_definition.task_definition.arn
+  desired_count    = var.task_count
+  launch_type      = "FARGATE"
+  assign_public_ip = false
 
   network_configuration {
     security_groups = [var.ecs_sg_id]
