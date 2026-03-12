@@ -17,7 +17,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   cpu                      = var.container_cpu
   memory                   = var.container_memory
   task_role_arn            = var.task_role_arn
-  execution_role_arn       = var.execution_role_arn  
+  execution_role_arn       = var.execution_role_arn
 
   depends_on = [aws_cloudwatch_log_group.TaskDF-Log_Group]
 
