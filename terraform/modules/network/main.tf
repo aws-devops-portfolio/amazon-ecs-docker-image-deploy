@@ -27,6 +27,24 @@ locals {
   selected_azs = slice(data.aws_availability_zones.available.names, 0, 2)
 }
 
+resource "aws_vpc_endpoint" "ecr_api" {
+  vpc_id            = aws_vpc.main.id
+  service_name      = "com.amazonaws.us-east-1.ecr.api"
+  vpc_endpoint_type = "Interface"
+
+  subnet_ids         = aws_subnet.private-subnet[*].id
+  security_group_ids = [var.ecs_task_sg_id]
+}
+
+resource "aws_vpc_endpoint" "ecr_dkr" {
+  vpc_id            = aws_vpc.main.id
+  service_name      = "com.amazonaws.us-east-1.ecr.dkr"
+  vpc_endpoint_type = "Interface"
+
+  subnet_ids         = aws_subnet.private-subnet[*].id
+  security_group_ids = [var.ecs_task_sg_id]
+}
+
 # Public Subnet
 #tfsec:ignore:aws-ec2-no-public-ip-subnet
 resource "aws_subnet" "public-subnet" {

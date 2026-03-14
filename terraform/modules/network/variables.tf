@@ -11,3 +11,7 @@ variable "private_subnet_count" {
   type    = number
   default = 4
 }
+
+variable "ecs_task_sg_id" {
+  type = string
+}

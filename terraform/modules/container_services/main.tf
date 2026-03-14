@@ -62,8 +62,9 @@ resource "aws_ecs_service" "service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    security_groups = [var.ecs_sg_id]
-    subnets         = var.private_subnets
+    security_groups  = [var.ecs_sg_id]
+    subnets          = var.private_subnets
+    assign_public_ip = false
   }
 
   load_balancer {
@@ -71,4 +72,10 @@ resource "aws_ecs_service" "service" {
     container_name   = var.container_name
     container_port   = var.container_port
   }
+
+  depends_on = [
+    aws_nat_gateway.nat-gw
+  ]
+
+
 }

@@ -2,6 +2,7 @@
 module "network" {
   source   = "./modules/network"
   vpc_cidr = var.vpc_cidr
+  ecs_task_sg_id = module.security_groups.ecs_task_sg_id
 }
 
 module "iam_fargate" {
