@@ -19,12 +19,15 @@ module "container_services" {
   task_role_arn      = module.iam_fargate.task_role_arn
   private_subnets    = module.network.public_subnet_ids
   region             = "us-east-1"
-  ecs_sg_id          = module.security_groups.ecs_task_sg
+  ecs_task_sg_id     = module.security_groups.ecs_task_sg_id
   task_count         = 1
   execution_role_arn = module.iam_fargate.execution_role_arn
   container_port     = 8080
   container_memory   = 512
   ecr_repo_url       = module.container_repository.ecr_repo_url
+
+  depends_on = [module.network]
+
 }
 
 module "security_groups" {

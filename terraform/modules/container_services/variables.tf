@@ -57,7 +57,7 @@ variable "target_group_id" {
   description = "Target Group Id"
   type        = string
 }
-variable "ecs_sg_id" {
+variable "ecs_task_sg_id" {
   description = "ECS Security Group Id"
   type        = string
 }
