@@ -1,6 +1,4 @@
 # VPC
-# Disabling VPC flow logs due to cost constraints
-#tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs
 resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
@@ -32,7 +30,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
   service_name      = "com.amazonaws.us-east-1.ecr.api"
   vpc_endpoint_type = "Interface"
 
-  subnet_ids         = aws_subnet.private-subnet[*].id
+  subnet_ids         = slice(aws_subnet.private-subnet[*].id, 0, 2)
   security_group_ids = [var.ecs_task_sg_id]
 }
 
@@ -41,12 +39,11 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   service_name      = "com.amazonaws.us-east-1.ecr.dkr"
   vpc_endpoint_type = "Interface"
 
-  subnet_ids         = aws_subnet.private-subnet[*].id
+  subnet_ids         = slice(aws_subnet.private-subnet[*].id, 0, 2)
   security_group_ids = [var.ecs_task_sg_id]
 }
 
 # Public Subnet
-#tfsec:ignore:aws-ec2-no-public-ip-subnet
 resource "aws_subnet" "public-subnet" {
   count      = length(local.selected_azs)
   vpc_id     = aws_vpc.main.id
