@@ -90,7 +90,7 @@ resource "aws_security_group_rule" "ecs_task_sg_egress_rule" {
 
 resource "aws_security_group" "vpce_sg" {
   name   = "vpce-sg"
-  vpc_id = aws_vpc.main.id
+  vpc_id = var.vpc_id
 }
 
 resource "aws_security_group_rule" "vpce_https" {
