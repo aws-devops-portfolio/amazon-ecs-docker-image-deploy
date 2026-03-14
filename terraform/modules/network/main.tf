@@ -30,8 +30,9 @@ resource "aws_vpc_endpoint" "ecr_api" {
   service_name      = "com.amazonaws.us-east-1.ecr.api"
   vpc_endpoint_type = "Interface"
 
-  subnet_ids         = slice(aws_subnet.private-subnet[*].id, 0, 2)
-  security_group_ids = [var.ecs_task_sg_id]
+  subnet_ids          = slice(aws_subnet.private-subnet[*].id, 0, 2)
+  security_group_ids  = [var.vpce_sg_id]
+  private_dns_enabled = true
 }
 
 resource "aws_vpc_endpoint" "ecr_dkr" {
@@ -40,7 +41,9 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   vpc_endpoint_type = "Interface"
 
   subnet_ids         = slice(aws_subnet.private-subnet[*].id, 0, 2)
-  security_group_ids = [var.ecs_task_sg_id]
+  security_group_ids = [var.vpce_sg_id]
+
+  private_dns_enabled = true
 }
 
 # Public Subnet

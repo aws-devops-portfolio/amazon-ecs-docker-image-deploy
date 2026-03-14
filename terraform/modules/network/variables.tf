@@ -12,6 +12,6 @@ variable "private_subnet_count" {
   default = 4
 }
 
-variable "ecs_task_sg_id" {
+variable "vpce_sg_id" {
   type = string
 }

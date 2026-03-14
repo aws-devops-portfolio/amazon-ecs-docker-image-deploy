@@ -88,4 +88,27 @@ resource "aws_security_group_rule" "ecs_task_sg_egress_rule" {
   to_port           = 0
 }
 
+resource "aws_security_group" "vpce_sg" {
+  name   = "vpce-sg"
+  vpc_id = aws_vpc.main.id
+}
+
+resource "aws_security_group_rule" "vpce_https" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.vpce_sg.id
+  source_security_group_id = aws_security_group.ecs_task_sg.id
+  from_port                = var.https_port
+  to_port                  = var.https_port
+  protocol                 = "tcp"
+}
+
+resource "aws_security_group_rule" "vpce_egress" {
+  type              = "egress"
+  security_group_id = aws_security_group.vpce_sg.id
+  cidr_blocks       = ["0.0.0.0/0"]
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+}
+
 

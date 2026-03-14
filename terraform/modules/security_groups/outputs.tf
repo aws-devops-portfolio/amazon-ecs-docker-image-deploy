@@ -4,3 +4,6 @@ output "alb_sg_id" {
 output "ecs_task_sg_id" {
   value = aws_security_group.ecs_task_sg.id
 }
+output "vpce_sg_id" {
+  value = aws_security_group.vpce_sg.id
+}
