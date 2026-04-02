@@ -41,7 +41,7 @@ jobs:
           java-version: 21
 
       - name: Build with Maven
-        run: ./mvnw clean verify
+        run: ./product-app/mvnw -f product-app/pom.xml clean verify
         working-directory: product-app
 
       - name: Configure AWS credentials
@@ -67,6 +67,7 @@ jobs:
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
 
       - name: Update ECS Service
+        if: github.event_name == 'push'
         run: |
           aws ecs update-service \
           --cluster $ECS_CLUSTER \
