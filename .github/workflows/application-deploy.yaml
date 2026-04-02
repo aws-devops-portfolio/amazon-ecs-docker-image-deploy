@@ -50,7 +50,6 @@ jobs:
           role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/ECSFargateGitHubActionsRole
           aws-region: ${{ env.AWS_REGION }}
 
-
       # 4. Log in to Amazon ECR
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
