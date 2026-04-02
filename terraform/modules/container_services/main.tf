@@ -24,7 +24,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   container_definitions = jsonencode([
     {
       name  = var.container_name
-      image = "${var.ecr_repo_url}:latest"
+      image = "public.ecr.aws/docker/library/nginx:latest"
 
       cpu    = var.container_cpu
       memory = var.container_memory
