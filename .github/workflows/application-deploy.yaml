@@ -14,7 +14,7 @@ on:
      - "product-app/src/**"
      - "product-app/pom.xml"
      - "product-app/Dockerfile"
-	 
+
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: product-app-ecr
