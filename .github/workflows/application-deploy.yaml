@@ -3,21 +3,24 @@ name: Application CI/CD
 on:
   push:
     branches: [ main ]
-    paths:
-      - "src/**"
-      - "pom.xml"
-      - "Dockerfile"
+  #  paths:
+  #    - "src/**"
+  #    - "pom.xml"
+  #    - "Dockerfile"
 
   pull_request:
     branches: [ main ]
-    paths:
-      - "src/**"
-      - "pom.xml"
-      - "Dockerfile"
+  #  paths:
+  #    - "src/**"
+  #    - "pom.xml"
+  #    - "Dockerfile"
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+  ECR_REPOSITORY: product-app-ecr
+  ECS_CLUSTER: product-app-cluster
+  ECS_SERVICE: product-app-service
+  CONTAINER_NAME: product-app
 
 jobs:
   build-and-push:
@@ -44,7 +47,7 @@ jobs:
         if: github.event_name == 'push'
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/GitHubAction-Role
+          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/ECSFargateGitHubActionsRole
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to ECR
@@ -61,3 +64,11 @@ jobs:
         if: github.event_name == 'push'
         run: |
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+
+      - name: Update ECS Service
+        run: |
+          aws ecs update-service \
+          --cluster $ECS_CLUSTER \
+          --service $ECS_SERVICE \
+          --force-new-deployment \
+          --desired-count 1
