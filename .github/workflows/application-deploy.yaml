@@ -3,10 +3,10 @@ name: Build, Push & Deploy to ECS
 on:
   push:
     branches: [ main ]
-    paths:
-      - "product-app/src/**"
-      - "product-app/pom.xml"
-      - "product-app/Dockerfile"
+  #  paths:
+  #    - "product-app/src/**"
+  #    - "product-app/pom.xml"
+  #    - "product-app/Dockerfile"
 
   pull_request:
     branches: [ main ]
