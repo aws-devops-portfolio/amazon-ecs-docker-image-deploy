@@ -15,6 +15,10 @@ on:
      - "product-app/pom.xml"
      - "product-app/Dockerfile"
 
+permissions:
+  id-token: write  # REQUIRED for OIDC role assumption
+  contents: read   # This is required for actions/checkout
+
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: product-app-ecr
