@@ -38,7 +38,7 @@ jobs:
 
       - name: Build Maven project
         run: mvn clean package -DskipTests
-        working-directory: ./product-app/src   
+        working-directory: ./product-app  
 
       - name: Configure AWS credentials
         if: github.event_name == 'push'
@@ -58,7 +58,7 @@ jobs:
         if: github.event_name == 'push'
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . -t $ECR_REGISTRY/$ECR_REPOSITORY:latest 
-        working-directory: ./product-app/src
+        working-directory: ./product-app
 
       - name: Push Docker image
         if: github.event_name == 'push'
