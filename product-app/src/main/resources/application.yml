@@ -1,2 +1,11 @@
 app:
   product-file: classpath:products.txt
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
