@@ -48,3 +48,16 @@ module "load_balancer" {
   sub_domain        = "products.mike71techsolutions.com"
   route53_zone_id   = data.aws_route53_zone.main.zone_id  
 }
+
+# Sub domain record
+resource "aws_route53_record" "sub_domain" {
+  zone_id = data.aws_route53_zone.main.zone_id
+  name    = "products"
+  type    = "A"
+
+  alias {
+    name                   = module.load_balancer.alb_dns_name
+    zone_id                = module.load_balancer.alb_zone_id
+    evaluate_target_health = true
+  }
+}
