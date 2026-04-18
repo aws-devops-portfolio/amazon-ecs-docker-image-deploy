@@ -16,7 +16,7 @@ env:
   ECR_REPOSITORY: product-app-ecr
   ECS_CLUSTER: product-app-cluster
   ECS_SERVICE: product-app-service
-  TASK_FAMILY: product-app-task
+  TASK_FAMILY: task-definition-product-app
   CONTAINER_NAME: product-app
 
 jobs:
