@@ -3,8 +3,8 @@ name: Application CI/CD
 on:
   push:
     branches: [ main ]
-    paths:
-      - "product-app/**"
+  #  paths:
+  #    - "product-app/**"
   workflow_dispatch:
 
 permissions:
