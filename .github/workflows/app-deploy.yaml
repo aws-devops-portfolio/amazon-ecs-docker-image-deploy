@@ -69,9 +69,9 @@ jobs:
             --output text) \
             --region us-east-1)
 
-          NEW_IMAGE="${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:${{ github.sha }}"
+          NEW_IMAGE="889049355474.dkr.ecr.us-east-1.amazonaws.com/${ECR_REPOSITORY}:3d37975d0d3e318eb7b33de6dbfeabc892caf71e"
 
-          UPDATED=$(echo $TASK_DEF | jq \
+          UPDATED=$(echo "$TASK_DEF" | jq \
             --arg IMAGE "$NEW_IMAGE" \
             --arg NAME "$CONTAINER_NAME" \
             '.taskDefinition
@@ -89,9 +89,10 @@ jobs:
 
           echo "$UPDATED" > new-task-def.json
 
+      - name: Register Updated Task Definition
+        run: |
           aws ecs register-task-definition \
             --cli-input-json file://new-task-def.json
-
       - name: Deploy to ECS
         run: |
           aws ecs update-service \
