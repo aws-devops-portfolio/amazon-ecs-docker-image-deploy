@@ -22,7 +22,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   container_definitions = jsonencode([
     {
       name  = var.container_name
-      image = "nginx"
+      image = "889049355474.dkr.ecr.us-east-1.amazonaws.com/product-app-ecr:latest"
 
       cpu    = var.container_cpu
       memory = var.container_memory
