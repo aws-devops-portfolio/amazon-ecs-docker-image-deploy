@@ -53,8 +53,8 @@ variable "task_count" {
   description = "Number of ECS tasks"
   type        = number
 }
-variable "target_group_id" {
-  description = "Target Group Id"
+variable "target_group_arn" {
+  description = "Target Group ARN"
   type        = string
 }
 variable "ecs_task_sg_id" {

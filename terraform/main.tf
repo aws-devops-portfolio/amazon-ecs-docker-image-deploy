@@ -15,7 +15,7 @@ module "container_repository" {
 
 module "container_services" {
   source             = "./modules/container_services"
-  target_group_id    = module.load_balancer.target_group_id
+  target_group_arn   = module.load_balancer.target_group_arn
   task_role_arn      = module.iam_fargate.task_role_arn
   private_subnets    = module.network.public_subnet_ids
   region             = "us-east-1"
