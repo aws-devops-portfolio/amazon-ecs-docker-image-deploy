@@ -26,12 +26,12 @@ resource "aws_lb_target_group" "alb_tg" {
 
 # listener
 resource "aws_alb_listener" "alb_listener" {
-  load_balancer_arn = aws_lb.web_alb.id
+  load_balancer_arn = aws_lb.web_alb.arn
   port              = var.port
   protocol          = var.protocol
 
   default_action {
-    target_group_arn = aws_lb_target_group.alb_tg.id
+    target_group_arn = aws_lb_target_group.alb_tg.arn
     type             = "forward"
   }
 }
