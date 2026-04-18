@@ -15,6 +15,11 @@ resource "aws_lb_target_group" "alb_tg" {
   protocol    = var.protocol
   vpc_id      = var.vpc_id
   target_type = "ip"
+
+  health_check {
+    path = "/actuator/health"  
+  }
+
 }
 
 # listener

@@ -32,7 +32,7 @@ variable "container_name" {
 variable "container_port" {
   description = "Container port"
   type        = number
-  default     = 8080
+  default     = 80
 }
 variable "host_port" {
   description = "Host port"
