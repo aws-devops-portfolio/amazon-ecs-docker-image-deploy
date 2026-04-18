@@ -1,3 +1,6 @@
+data "aws_route53_zone" "main" {
+  name = "mike71techsolutions.com"
+}
 
 module "network" {
   source     = "./modules/network"
@@ -42,4 +45,6 @@ module "load_balancer" {
   alb_sg_id = module.security_groups.alb_sg_id
   port      = 8080
   protocol  = "HTTP"
+  sub_domain        = "wordpress.mike71techsolutions.com"
+  route53_zone_id   = data.aws_route53_zone.main.zone_id  
 }

@@ -23,3 +23,13 @@ variable "subnets" {
   type        = list(string)
   description = "List of subnet IDs for ALB"
 }
+
+variable "route53_zone_id" {
+  type        = string
+  description = "Route53 Hosted Zone ID for the domain"
+}
+
+variable "sub_domain" {
+  type        = string
+  description = "Subdomain for the ALB (e.g., 'app' for app.example.com)" 
+}
