@@ -17,9 +17,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   cpu                      = var.container_cpu
   memory                   = var.container_memory
   task_role_arn            = var.task_role_arn
-  execution_role_arn       = var.execution_role_arn
-
-  depends_on = [aws_cloudwatch_log_group.TaskDF-Log_Group]
+  execution_role_arn       = var.execution_role_arn  
 
   container_definitions = jsonencode([
     {
@@ -48,7 +46,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   ])
 }
 
-resource "aws_cloudwatch_log_group" "TaskDF-Log_Group" {
+resource "aws_cloudwatch_log_group" "product_ecs_logs" {
   name              = "/ecs/task-definition-${var.container_name}"
   retention_in_days = 30
 }
@@ -72,5 +70,7 @@ resource "aws_ecs_service" "service" {
     container_name   = var.container_name
     container_port   = var.container_port
   }
+
+  depends_on = [aws_cloudwatch_log_group.product_ecs_logs]
 
 }

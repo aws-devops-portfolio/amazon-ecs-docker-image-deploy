@@ -2,7 +2,7 @@
 resource "aws_iam_role" "task_execution_role" {
   name               = "${var.task_service_role}ECSTasksExecutionRole"
   path               = "/"
-  assume_role_policy = data.aws_iam_policy_document.tasks_service_assume_policy.json
+  assume_role_policy = data.aws_iam_policy_document.task_execution_assume_policy.json
 }
 
 data "aws_iam_policy_document" "task_execution_assume_policy" {
