@@ -62,9 +62,9 @@ resource "aws_security_group_rule" "ecs_task_sg_http_rule" {
   type                     = "ingress"
   security_group_id        = aws_security_group.ecs_task_sg.id
   source_security_group_id = aws_security_group.alb_sg.id
-  from_port                = var.http_port
+  from_port                = 8080 #var.http_port
   protocol                 = "tcp"
-  to_port                  = var.http_port
+  to_port                  = 8080 #var.http_port
 }
 
 resource "aws_security_group_rule" "ecs_task_sg_https_rule" {

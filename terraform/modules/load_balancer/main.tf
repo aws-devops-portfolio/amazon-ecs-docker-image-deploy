@@ -17,7 +17,9 @@ resource "aws_lb_target_group" "alb_tg" {
   target_type = "ip"
 
   health_check {
-    path = "/actuator/health"  
+    path = "/actuator/health" 
+    port = "traffic-port"
+    matcher = "200" 
   }
 
 }
