@@ -44,7 +44,7 @@ module "load_balancer" {
   subnets           = module.network.public_subnet_ids
   alb_sg_id         = module.security_groups.alb_sg_id
   port              = 8080
-  protocol  = "HTTP"
+  protocol          = "HTTP"
   sub_domain        = "products.mike71techsolutions.com"
   route53_zone_id   = data.aws_route53_zone.main.zone_id  
 }
