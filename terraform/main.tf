@@ -40,6 +40,6 @@ module "load_balancer" {
   vpc_id    = module.network.vpc_id
   subnets   = module.network.public_subnet_ids
   alb_sg_id = module.security_groups.alb_sg_id
-  port      = 80
+  port      = 8080
   protocol  = "HTTP"
 }
