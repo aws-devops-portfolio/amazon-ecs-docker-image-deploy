@@ -39,12 +39,12 @@ module "security_groups" {
 }
 
 module "load_balancer" {
-  source    = "./modules/load_balancer"
-  vpc_id    = module.network.vpc_id
-  subnets   = module.network.public_subnet_ids
-  alb_sg_id = module.security_groups.alb_sg_id
-  port      = 8080
+  source            = "./modules/load_balancer"
+  vpc_id            = module.network.vpc_id
+  subnets           = module.network.public_subnet_ids
+  alb_sg_id         = module.security_groups.alb_sg_id
+  port              = 8080
   protocol  = "HTTP"
-  sub_domain        = "wordpress.mike71techsolutions.com"
+  sub_domain        = "products.mike71techsolutions.com"
   route53_zone_id   = data.aws_route53_zone.main.zone_id  
 }
