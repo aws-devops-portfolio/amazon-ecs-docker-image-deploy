@@ -35,6 +35,7 @@ public class ProductService {
         products.add(new Product(30, "Laptop", "Computer Shop", 500));
         products.add(new Product(40, "Monitor", "Digital Dealers", 300));
         products.add(new Product(50, "Hard Drive", "Computer Shop", 150));
+        products.add(new Product(60, "Solid State Drive", "Computer Shop", 250));
 
         return products;
 
