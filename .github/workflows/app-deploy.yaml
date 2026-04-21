@@ -56,7 +56,6 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
         working-directory: ./product-app
 
-      # 👇 THIS IS THE IMPORTANT PART
       - name: Update ECS Task Definition
         id: task-def
         run: |
@@ -83,12 +82,17 @@ jobs:
 
           echo "$UPDATED" > new-task-def.json
 
-          aws ecs register-task-definition \
-            --cli-input-json file://new-task-def.json
+          NEW_TASK_DEF_ARN=$(aws ecs register-task-definition \
+            --cli-input-json file://new-task-def.json \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+
+          echo "NEW_TASK_DEF_ARN=$NEW_TASK_DEF_ARN" >> $GITHUB_ENV
 
       - name: Deploy to ECS
         run: |
           aws ecs update-service \
             --cluster $ECS_CLUSTER \
             --service $ECS_SERVICE \
+            --task-definition $NEW_TASK_DEF_ARN \
             --force-new-deployment
