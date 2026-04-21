@@ -1,5 +1,6 @@
 package com.devhub164.product.controller;
 
+import com.devhub164.product.entity.Product;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,7 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public List<String> getProducts(){
+    public List<Product> getProducts(){
         return productService.getProducts();
     }
 

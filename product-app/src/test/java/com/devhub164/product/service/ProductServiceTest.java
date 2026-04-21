@@ -1,5 +1,6 @@
 package com.devhub164.product.service;
 
+import com.devhub164.product.entity.Product;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,7 +18,7 @@ public class ProductServiceTest {
 
     @Test
     public void shouldGetProducts() {
-        List<String> result = productService.getProducts();
+        List<Product> result = productService.getProducts();
         assertNotNull(result);
         assertEquals(4, result.size());
     }
