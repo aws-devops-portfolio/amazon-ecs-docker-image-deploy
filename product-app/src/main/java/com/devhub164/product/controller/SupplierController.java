@@ -1,30 +1,27 @@
 package com.devhub164.product.controller;
 
-import com.devhub164.product.response.ProductResponse;
 import com.devhub164.product.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/products")
-public class ProductController {
+@RequestMapping("/api/v1/suppliers")
+public class SupplierController {
 
     final private ProductService productService;
 
-    public ProductController(ProductService productService){
+    public SupplierController(ProductService productService){
         this.productService = productService;
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductResponse>> getProducts(){
-        log.info("Retrieving a list of products");
-        return ResponseEntity.ok(productService.getProducts());
+    public Set<String> getSuppliers(){
+        log.info("Retrieving a list of suppliers");
+        return productService.getSuppliers();
     }
-
 }

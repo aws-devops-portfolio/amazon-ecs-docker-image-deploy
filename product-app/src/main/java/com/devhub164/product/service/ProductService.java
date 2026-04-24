@@ -1,42 +1,53 @@
 package com.devhub164.product.service;
 
 import com.devhub164.product.entity.Product;
+import com.devhub164.product.response.ProductResponse;
 import jakarta.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 public class ProductService {
 
-    private List<Product> productList;
+    private List<Product> productList = new ArrayList<>();
 
     @PostConstruct
     public void init(){
         this.productList = loadProducts();
     }
 
-    public List<Product> getProducts() {
-        log.info("Retrieving a list of products");
-        return Collections.unmodifiableList(productList);
+    public List<ProductResponse> getProducts() {
+        return productList.stream()
+                .map(product -> new ProductResponse(
+                        product.getId(),
+                        product.getName(),
+                        product.getSupplier(),
+                        product.getPrice()
+                ))
+        .toList();
+
     }
 
     private List<Product> loadProducts() {
-        List<Product> products = new ArrayList<>();
+        if(productList.isEmpty()){
+            productList.add(new Product(10, "Phone", "Mobile Suppliers", 100));
+            productList.add(new Product(20, "Tablet", "Mobile Suppliers", 250));
+            productList.add(new Product(30, "Laptop", "Computer Shop", 500));
+            productList.add(new Product(40, "Monitor", "Digital Dealers", 300));
+        }
 
-        products.add(new Product(10, "Phone", "Mobile Suppliers", 100));
-        products.add(new Product(20, "Tablet", "Mobile Suppliers", 250));
-        products.add(new Product(30, "Laptop", "Computer Shop", 500));
-        products.add(new Product(40, "Monitor", "Digital Dealers", 300));
-
-        return products;
+        return productList;
 
     }
-    
+
+    public Set<String> getSuppliers() {
+
+        return productList.stream()
+                .map(Product::getSupplier)
+                .collect(Collectors.toSet());
+    }
 }
