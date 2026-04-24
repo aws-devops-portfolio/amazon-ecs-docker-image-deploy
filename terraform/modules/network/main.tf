@@ -25,6 +25,16 @@ locals {
   selected_azs = slice(data.aws_availability_zones.available.names, 0, 2)
 }
 
+# S3 Endpoint
+resource "aws_vpc_endpoint" "s3" {
+  vpc_id            = aws_vpc.main.id
+  service_name      = "com.amazonaws.us-east-1.s3"
+  vpc_endpoint_type = "Gateway"
+
+  route_table_ids = [aws_route_table.private-rt.id]
+}
+
+# ECR API endpoint
 resource "aws_vpc_endpoint" "ecr_api" {
   vpc_id            = aws_vpc.main.id
   service_name      = "com.amazonaws.us-east-1.ecr.api"
@@ -35,6 +45,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
   private_dns_enabled = true
 }
 
+# ECR Docker endpoint
 resource "aws_vpc_endpoint" "ecr_dkr" {
   vpc_id            = aws_vpc.main.id
   service_name      = "com.amazonaws.us-east-1.ecr.dkr"
@@ -44,6 +55,26 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   security_group_ids = [var.vpce_sg_id]
 
   private_dns_enabled = true
+}
+
+# CloudWatch Logs endpoint
+resource "aws_vpc_endpoint" "logs" {
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.us-east-1.logs"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = slice(aws_subnet.private-subnet[*].id, 0, 2)
+  security_group_ids  = [var.vpce_sg_id]
+  private_dns_enabled = true
+
+}
+
+# Internet Gateway
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "main-igw"
+  }
 }
 
 # Public Subnet
@@ -74,44 +105,10 @@ resource "aws_subnet" "private-subnet" {
   }
 }
 
-# Elastic IP Address
-resource "aws_eip" "eip" {
-  domain = "vpc"
-
-  tags = {
-    Name = "nat-eip"
-  }
-}
-
-# Internet Gateway
-resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.main.id
-
-  tags = {
-    Name = "main-igw"
-  }
-}
-
-# NAT Gateway
-resource "aws_nat_gateway" "nat-gw" {
-  allocation_id = aws_eip.eip.id
-  subnet_id     = aws_subnet.public-subnet[0].id
-
-  depends_on = [aws_internet_gateway.igw]
-
-  tags = {
-    Name = "NAT-gw"
-  }
-}
 
 # Public Route Table
 resource "aws_route_table" "public-rt" {
-  vpc_id = aws_vpc.main.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
-  }
+  vpc_id = aws_vpc.main.id  
 
   tags = {
     Name = "public-rt"
@@ -129,12 +126,7 @@ resource "aws_route_table_association" "public_assoc" {
 # Private Route Table
 resource "aws_route_table" "private-rt" {
   vpc_id = aws_vpc.main.id
-
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat-gw.id
-  }
-
+  
   tags = {
     Name = "private-rt"
   }

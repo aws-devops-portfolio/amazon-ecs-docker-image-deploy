@@ -83,9 +83,9 @@ resource "aws_security_group_rule" "ecs_task_sg_egress_rule" {
   type              = "egress"
   security_group_id = aws_security_group.ecs_task_sg.id
   cidr_blocks       = [var.all_traffic]
-  from_port         = 0
+  from_port         = var.https_port
   protocol          = "-1"
-  to_port           = 0
+  to_port           = var.https_port
 }
 
 resource "aws_security_group" "vpce_sg" {
@@ -110,5 +110,3 @@ resource "aws_security_group_rule" "vpce_egress" {
   to_port           = 0
   protocol          = "-1"
 }
-
-
