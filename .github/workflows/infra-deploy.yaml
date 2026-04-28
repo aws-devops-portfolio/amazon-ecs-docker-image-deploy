@@ -2,9 +2,11 @@ name: Infrastructure CI/CD
 
 on:
   push:
-    branches: [ main ]
-    paths:
-      - "terraform/**"
+    branches: 
+      - main 
+      - develop
+  #  paths:
+  #    - "terraform/**"
   workflow_dispatch:
 
 permissions:

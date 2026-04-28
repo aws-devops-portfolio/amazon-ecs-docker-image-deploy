@@ -2,7 +2,9 @@ name: Application CI/CD
 
 on:
   push:
-    branches: [ main ]
+    branches: 
+      - main 
+      - develop
   #  paths:
   #    - "product-app/**"
   workflow_dispatch:
