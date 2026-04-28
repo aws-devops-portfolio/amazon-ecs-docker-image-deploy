@@ -7,11 +7,20 @@ variable "port" {
   type        = number
   description = "Target Group port"
 }
+variable "http_port" {
+  type        = number
+  description = "HTTP port"
+  default = 80
+}
+variable "https_port" {
+  type        = number
+  description = "HTTPS port"
+  default = 443
+}
 
 variable "protocol" {
   type        = string
   description = "Target Group protocol"
-
 }
 
 variable "vpc_id" {
@@ -32,4 +41,9 @@ variable "route53_zone_id" {
 variable "sub_domain" {
   type        = string
   description = "Subdomain for the ALB (e.g., 'app' for app.example.com)" 
+}
+
+variable "app_prefix" {
+  description = "Application prefix"
+  type        = string
 }

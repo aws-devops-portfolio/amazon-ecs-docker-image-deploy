@@ -1,11 +1,11 @@
 # Security Group for ALB 
 resource "aws_security_group" "alb_sg" {
-  name        = "web_alb_sg"
+  name        = "${var.app_prefix}-alb-sg"
   description = "ALB Security Group"
   vpc_id      = var.vpc_id
 
   tags = {
-    Name = "web_alg_sg"
+    Name = "${var.app_prefix}-alb-sg"
   }
 
 }
@@ -47,7 +47,7 @@ resource "aws_security_group_rule" "alb_egress_rule" {
 
 # Security Group for ECS tasks
 resource "aws_security_group" "ecs_task_sg" {
-  name        = "ecs_task_sg"
+  name        = "${var.app_prefix}-ecs-task-sg"
   description = "ECS Task security group"
   vpc_id      = var.vpc_id
 
@@ -62,9 +62,9 @@ resource "aws_security_group_rule" "ecs_task_sg_http_rule" {
   type                     = "ingress"
   security_group_id        = aws_security_group.ecs_task_sg.id
   source_security_group_id = aws_security_group.alb_sg.id
-  from_port                = 8080 #var.http_port
+  from_port                = var.container_port
   protocol                 = "tcp"
-  to_port                  = 8080 #var.http_port
+  to_port                  = var.container_port
 }
 
 resource "aws_security_group_rule" "ecs_task_sg_https_rule" {
@@ -89,7 +89,7 @@ resource "aws_security_group_rule" "ecs_task_sg_egress_rule" {
 }
 
 resource "aws_security_group" "vpce_sg" {
-  name   = "vpce-sg"
+  name   = "${var.app_prefix}-vpce-sg"
   vpc_id = var.vpc_id
 }
 
@@ -105,7 +105,7 @@ resource "aws_security_group_rule" "vpce_https" {
 resource "aws_security_group_rule" "vpce_egress" {
   type              = "egress"
   security_group_id = aws_security_group.vpce_sg.id
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = [var.all_traffic]
   from_port         = 0
   to_port           = 0
   protocol          = "-1"

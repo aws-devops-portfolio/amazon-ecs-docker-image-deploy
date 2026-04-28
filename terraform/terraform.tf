@@ -8,12 +8,7 @@ terraform {
   }
 
   required_version = ">= 1.2"
-
-  backend "s3" {
-    bucket = "devhub164-state-demo"
-    key    = "s3-github-actions/ecs-fargate.tfstate"
-    region = "us-east-1"
-  }
+  
 }
 
 provider "aws" {

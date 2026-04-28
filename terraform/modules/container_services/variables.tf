@@ -10,18 +10,21 @@ variable "execution_role_arn" {
   description = "Execution Role ARN"
   type        = string
 }
-variable "cluster_name" {
-  description = "ECS Cluster name"
-  type        = string
-  default     = "product-app"
-}
 variable "ecr_repo_name" {
   description = "ECR repository name"
   type        = string
-  default     = "product-app"
+  default     = "product-app-ecr"
 }
 variable "ecr_repo_url" {
   description = "ECR repository URL"
+  type        = string
+}
+variable "app_prefix" {
+  description = "Application prefix"
+  type        = string
+}
+variable "environment" {
+  description = "Environment name"
   type        = string
 }
 variable "container_name" {
@@ -31,11 +34,6 @@ variable "container_name" {
 }
 variable "container_port" {
   description = "Container port"
-  type        = number
-  default     = 8080
-}
-variable "host_port" {
-  description = "Host port"
   type        = number
   default     = 8080
 }
@@ -49,8 +47,12 @@ variable "container_memory" {
   type        = number
   default     = 512
 }
-variable "task_count" {
-  description = "Number of ECS tasks"
+variable "desired_task_count" {
+  description = "Desired number of ECS tasks"
+  type        = number
+}
+variable "maximum_task_count" {
+  description = "Maximum number of ECS tasks"
   type        = number
 }
 variable "target_group_arn" {

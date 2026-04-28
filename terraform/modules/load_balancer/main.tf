@@ -1,6 +1,6 @@
 # load balancer
 resource "aws_lb" "web_alb" {
-  name               = "product-app-alb"
+  name               = "${var.app_prefix}-alb"
   load_balancer_type = "application"
   subnets            = var.subnets
   security_groups    = [var.alb_sg_id]
@@ -10,7 +10,7 @@ resource "aws_lb" "web_alb" {
 
 # target group
 resource "aws_lb_target_group" "alb_tg" {
-  name        = "web-target-group"
+  name        = "${var.app_prefix}-tg"
   port        = var.port
   protocol    = var.protocol
   vpc_id      = var.vpc_id
@@ -58,14 +58,14 @@ resource "aws_acm_certificate_validation" "cert_validation" {
 
 resource "aws_lb_listener" "http_listener" {
   load_balancer_arn = aws_lb.web_alb.arn
-  port              = 80
+  port              = var.http_port
   protocol          = "HTTP"
 
   default_action {
     type = "redirect"
 
     redirect {
-      port        = "443"
+      port        = tostring(var.https_port)
       protocol    = "HTTPS"
       status_code = "HTTP_301"
     }
@@ -75,7 +75,7 @@ resource "aws_lb_listener" "http_listener" {
 # listener
 resource "aws_lb_listener" "https_listener" {
   load_balancer_arn = aws_lb.web_alb.arn
-  port              = 443
+  port              = var.https_port
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
 

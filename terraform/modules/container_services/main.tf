@@ -1,7 +1,13 @@
 
+data "aws_caller_identity" "current" {}
+
+locals {
+  ecr_url = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com/${var.ecr_repo_name}"  
+}
+
 # ECS  cluster
 resource "aws_ecs_cluster" "ecs_cluster" {
-  name = "${var.cluster_name}-cluster"
+  name = "${var.app_prefix}-cluster"
 
   setting {
     name  = "containerInsights"
@@ -11,7 +17,7 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 
 # Task definition
 resource "aws_ecs_task_definition" "task_definition" {
-  family                   = "task-definition-${var.container_name}"
+  family                   = "task-definition-${var.app_prefix}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.container_cpu
@@ -22,7 +28,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   container_definitions = jsonencode([
     {
       name  = var.container_name
-      image = "889049355474.dkr.ecr.us-east-1.amazonaws.com/product-app-ecr:latest"
+      image = "${local.ecr_url}:latest"
 
       cpu    = var.container_cpu
       memory = var.container_memory
@@ -34,10 +40,17 @@ resource "aws_ecs_task_definition" "task_definition" {
         }
       ]
 
+      environment = [
+        {
+          name  = "SPRING_PROFILES_ACTIVE"
+          value = var.environment
+        }
+      ]
+
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-group         = "/ecs/task-definition-${var.container_name}"
+          awslogs-group         = "/ecs/task-definition-${var.app_prefix}"
           awslogs-region        = var.region
           awslogs-stream-prefix = "ecs"
         }
@@ -47,13 +60,13 @@ resource "aws_ecs_task_definition" "task_definition" {
 }
 
 resource "aws_cloudwatch_log_group" "product_ecs_logs" {
-  name              = "/ecs/task-definition-${var.container_name}"
+  name              = "/ecs/task-definition-${var.app_prefix}"
   retention_in_days = 30
 }
 
 # ECS service
 resource "aws_ecs_service" "service" {
-  name            = "${var.container_name}-service"
+  name            = "${var.app_prefix}-service"
   cluster         = aws_ecs_cluster.ecs_cluster.id
   task_definition = aws_ecs_task_definition.task_definition.arn
   desired_count   = 1
@@ -76,8 +89,8 @@ resource "aws_ecs_service" "service" {
 }
 
 resource "aws_appautoscaling_target" "ecs_scaling_target" {
-  max_capacity       = 4
-  min_capacity       = 2
+  max_capacity       = var.maximum_task_count
+  min_capacity       = var.desired_task_count
   resource_id        = "service/${aws_ecs_cluster.ecs_cluster.name}/${aws_ecs_service.service.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"

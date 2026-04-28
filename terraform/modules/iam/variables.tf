@@ -3,3 +3,7 @@ variable "task_service_role" {
   type        = string
   default     = "AppTaskServiceRole"
 }
+variable "app_prefix" {
+  description = "Application prefix"
+  type        = string
+}

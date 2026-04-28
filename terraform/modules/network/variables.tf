@@ -15,3 +15,8 @@ variable "private_subnet_count" {
 variable "vpce_sg_id" {
   type = string
 }
+
+variable "app_prefix" {
+  description = "Application prefix"
+  type        = string
+}

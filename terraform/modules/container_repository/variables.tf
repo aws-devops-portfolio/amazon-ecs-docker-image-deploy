@@ -3,3 +3,8 @@ variable "ecr_name" {
   type        = string
   default     = "product-app-ecr"
 }
+
+variable "app_prefix" {
+  description = "Application prefix"
+  type        = string
+}
