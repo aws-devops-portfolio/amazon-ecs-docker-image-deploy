@@ -22,6 +22,14 @@ jobs:
         working-directory: terraform
 
     steps:
+      - name: Set up environment name
+        run: |
+          if [[ $GITHUB_REF == "refs/heads/main" ]]; then
+            echo "ENV=prod" >> $GITHUB_ENV
+          else
+            echo "ENV=dev" >> $GITHUB_ENV
+          fi
+
       - uses: actions/checkout@v4
 
       - uses: aws-actions/configure-aws-credentials@v4
