@@ -44,6 +44,10 @@ resource "aws_ecs_task_definition" "task_definition" {
         {
           name  = "SPRING_PROFILES_ACTIVE"
           value = var.environment
+        },
+        {
+          name  = "SERVER_PORT"
+          value = tostring(var.container_port)
         }
       ]
 
