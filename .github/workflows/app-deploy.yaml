@@ -12,11 +12,7 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: us-east-1
-  ECR_REPOSITORY: product-app-ecr
-  ECS_CLUSTER: product-app-cluster
-  ECS_SERVICE: product-app-service
-  TASK_FAMILY: task-definition-product-app
+  AWS_REGION: us-east-1  
   CONTAINER_NAME: product-app
 
 jobs:
@@ -24,6 +20,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set up environment name
+        run: |
+          if [[ $GITHUB_REF == "refs/heads/main" ]]; then
+            echo "ENV=prod" >> $GITHUB_ENV
+          else
+            echo "ENV=dev" >> $GITHUB_ENV
+          fi
+
+      - name: Set up ECS variables
+        run: |
+          echo "ECR_REPOSITORY=$ENV-$CONTAINER_NAME-ecr" >> $GITHUB_ENV
+          echo "ECS_CLUSTER=$ENV-$CONTAINER_NAME-cluster" >> $GITHUB_ENV
+          echo "ECS_SERVICE=$ENV-$CONTAINER_NAME-service" >> $GITHUB_ENV
+          echo "TASK_FAMILY=task-definition-$ENV-$CONTAINER_NAME" >> $GITHUB_ENV         
+
       - uses: actions/checkout@v3
 
       - uses: actions/setup-java@v3
@@ -46,6 +57,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build & Push Docker Image
+
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}

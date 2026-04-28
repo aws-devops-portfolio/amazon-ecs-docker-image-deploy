@@ -29,7 +29,11 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v3
 
-      - run: terraform init
-      - run: terraform validate
-      - run: terraform plan
-      - run: terraform apply -auto-approve
+      - name: Terraform Apply
+        run: |
+          cd terraform/environments/$ENV
+          terraform init
+          terraform validate
+          terraform plan
+          terraform apply -auto-approve
+    
