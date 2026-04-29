@@ -35,12 +35,21 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Apply
-        working-directory: terraform/environments/${{ env.ENV }}
+      - name: Debug + Terraform
         run: |
+          echo "=== WORKSPACE ==="
+          pwd
+
+          echo "=== LIST ROOT ==="
+          ls -la
+
+          echo "=== FULL TREE ==="
+          find .
+
+          echo "ENV=$ENV"
+
           cd terraform/environments/$ENV
+          ls -la
+
           terraform init
-          terraform validate
-          terraform plan
           terraform apply -auto-approve
-    
