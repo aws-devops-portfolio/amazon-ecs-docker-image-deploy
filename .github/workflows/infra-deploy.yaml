@@ -38,7 +38,7 @@ jobs:
       - name: Terraform Apply
         working-directory: terraform/environments/${{ env.ENV }}
         run: |
-          cd terraform/environments/$ENV
+          echo "ENV is: ${{ env.ENV }}"
           terraform init
           terraform validate
           terraform plan
