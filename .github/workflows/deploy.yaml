@@ -64,9 +64,8 @@ jobs:
 
       - name: Terraform Initialization
         working-directory: ${{ env.TERRAFORM_DIR }}
-        run: |
-          echo "ENV is: $ENV"
-          terraform init \
+        run: |          
+          terraform init -reconfigure \
             -backend-config="bucket=$TF_STATE_BUCKET" \
             -backend-config="key=s3-github-actions/ecs/$ENV/terraform.tfstate" \
             -backend-config="region=$AWS_REGION" \
