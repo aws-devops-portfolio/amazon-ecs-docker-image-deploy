@@ -1,0 +1,10 @@
+region             = "us-east-1"
+vpc_cidr           = "10.0.0.0/16"
+environment        = "dev"
+container_name     = "product-app"
+container_port     = 8081
+container_cpu      = 256
+container_memory   = 512
+desired_task_count = 1
+maximum_task_count = 2
+sub_domain_name    = "dev.products"
