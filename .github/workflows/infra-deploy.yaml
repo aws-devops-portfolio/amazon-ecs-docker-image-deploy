@@ -41,6 +41,6 @@ jobs:
           echo "ENV is: ${{ env.ENV }}"
           terraform init
           terraform validate
-          terraform plan
-          terraform apply -auto-approve
+          terraform plan -var-file=${{ env.ENV }}.tfvars
+          terraform apply -auto-approve -var-file=${{ env.ENV }}.tfvars 
     
