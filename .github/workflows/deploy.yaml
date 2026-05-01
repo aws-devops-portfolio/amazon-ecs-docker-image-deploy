@@ -18,6 +18,8 @@ env:
   AWS_REGION: us-east-1  
   CONTAINER_NAME: product-app
   TF_STATE_BUCKET: devhub164-state-demo
+  APP_DIR: product-app
+  TERRAFORM_DIR: terraform
 
 jobs:
   deploy:
@@ -53,21 +55,21 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Initialization
-        working-directory: terraform/environments/${{ env.ENV }}
+        working-directory: ${{ env.TERRAFORM_DIR }}
         run: |
           echo "ENV is: ${{ env.ENV }}"
           terraform init \
-            - backend-config="bucket=${{ env.TF_STATE_BUCKET }}" \
-            - backend-config="key=s3-github-actions/ecs/${{ env.ENV }}/terraform.tfstate" \
-            - backend-config="region=${{ env.AWS_REGION }}" \
-            - backend-config="use_lockfile=true"
+            -backend-config="bucket=${{ env.TF_STATE_BUCKET }}" \
+            -backend-config="key=s3-github-actions/ecs/${{ env.ENV }}/terraform.tfstate" \
+            -backend-config="region=${{ env.AWS_REGION }}" \
+            -backend-config="use_lockfile=true"
    
       - name: Terraform Validation
-        working-directory: terraform/environments/${{ env.ENV }}
+        working-directory: ${{ env.TERRAFORM_DIR }}
         run: terraform validate
 
       - name: Terraform Apply
-        working-directory: terraform/environments/${{ env.ENV }}
+        working-directory: ${{ env.TERRAFORM_DIR }}
         run: terraform apply -auto-approve -var-file=environments/${{ env.ENV }}.tfvars      
 
       # Build the application 
@@ -79,7 +81,7 @@ jobs:
 
       - name: Build JAR
         run: mvn clean package -DskipTests
-        working-directory: ./product-app
+        working-directory: ./${{ env.APP_DIR }}
 
       # Login to ECR
       - name: Login to ECR
@@ -89,8 +91,10 @@ jobs:
       # Build and push Docker image to ECR
       - name: Build and Push Docker Image
         run: |
-          docker build -t ${{ env.ECR_REPOSITORY }} .
-          docker push ${{ env.ECR_REPOSITORY }}
+          IMAGE_URI="${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}"
+
+          docker build -t $IMAGE_URI ${{ env.APP_DIR }}
+          docker push $IMAGE_URI
 
       # Update ECS Task Definition and deploy
       - name: Update ECS Task Definition
