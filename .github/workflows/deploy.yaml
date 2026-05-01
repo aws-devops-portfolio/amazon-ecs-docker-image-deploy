@@ -62,12 +62,12 @@ jobs:
           echo "BUCKET=$TF_STATE_BUCKET"
           echo "KEY=s3-github-actions/ecs/${ENV}/terraform.tfstate"
 
-      - name: Debug Terraform directory
+      - name: Debug Terraform directory (full)
         working-directory: ${{ env.TERRAFORM_DIR }}
         run: |
           echo "PWD: $(pwd)"
-          echo "Files:"
-          ls -la
+          echo "Tree:"
+          find . -maxdepth 2 -type f
 
       - name: Terraform Initialization
         working-directory: ${{ env.TERRAFORM_DIR }}
