@@ -14,6 +14,8 @@ crash.*.log
 *.tfvars
 *.tfvars.json
 !terraform.auto.tfvars
+!dev.tfvars
+!prod.tfvars
 
 # Ignore transient lock info files created by terraform apply
 .terraform.tfstate.lock.info
