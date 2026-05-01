@@ -34,10 +34,10 @@ public class ProductService {
 
     private List<Product> loadProducts() {
         if(productList.isEmpty()){
-            productList.add(new Product(10, "Phone", "Mobile Suppliers", 100));
-            productList.add(new Product(20, "Tablet", "Mobile Suppliers", 250));
-            productList.add(new Product(30, "Laptop", "Computer Shop", 500));
-            productList.add(new Product(40, "Monitor", "Digital Dealers", 300));
+            productList.add(new Product(1, "Phone", "Mobile Suppliers", 10));
+            productList.add(new Product(2, "Tablet", "Mobile Suppliers", 25));
+            productList.add(new Product(3, "Laptop", "Computer Shop", 50));
+            productList.add(new Product(4, "Monitor", "Digital Dealers", 30));
         }
 
         return productList;
