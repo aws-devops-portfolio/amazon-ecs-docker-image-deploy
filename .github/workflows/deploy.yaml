@@ -78,16 +78,27 @@ jobs:
           -backend-config="key=s3-github-actions/ecs/$ENV/terraform.tfstate" \
           -backend-config="region=$AWS_REGION"
 
-    # VALIDATE (no backend)
       - name: Terraform Validation
         working-directory: ${{ env.TERRAFORM_DIR }}
         run: |
           terraform validate
 
-    # APPLY (real backend already initialized)
       - name: Terraform Apply
         working-directory: ${{ env.TERRAFORM_DIR }}
-        run: terraform apply -auto-approve -var-file=environments/$ENV.tfvars      
+        run: terraform apply -auto-approve -var-file=environments/$ENV.tfvars 
+
+      - name: Wait for ECR repository
+        run: |
+          echo "Waiting for ECR repository to be available..."
+
+          for i in {1..10}; do
+            aws ecr describe-repositories \
+            --repository-names $ECR_REPOSITORY \
+            && echo "ECR repository found!" && break
+
+            echo "Retrying in 5 seconds..."
+            sleep 5
+          done     
 
       # Build the application 
       - name: Set up Java
