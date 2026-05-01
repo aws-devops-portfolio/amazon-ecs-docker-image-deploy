@@ -36,6 +36,8 @@ jobs:
           else
             echo "ENV=dev" >> $GITHUB_ENV
           fi
+          
+          echo "ENV=$ENV" >> $GITHUB_ENV
 
       - name: Set up resource names
         run: |
@@ -54,14 +56,20 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: Debug Terraform backend values
+        run: |
+          echo "ENV=$ENV"
+          echo "BUCKET=$TF_STATE_BUCKET"
+          echo "KEY=s3-github-actions/ecs/${ENV}/terraform.tfstate"
+
       - name: Terraform Initialization
         working-directory: ${{ env.TERRAFORM_DIR }}
         run: |
-          echo "ENV is: ${{ env.ENV }}"
-          terraform init \
-            -backend-config="bucket=${{ env.TF_STATE_BUCKET }}" \
-            -backend-config="key=s3-github-actions/ecs/${{ env.ENV }}/terraform.tfstate" \
-            -backend-config="region=${{ env.AWS_REGION }}" \
+          echo "ENV is: $ENV"
+          terraform init -backend=false \
+            -backend-config="bucket=$TF_STATE_BUCKET" \
+            -backend-config="key=s3-github-actions/ecs/$ENV/terraform.tfstate" \
+            -backend-config="region=$AWS_REGION" \
             -backend-config="use_lockfile=true"
    
       - name: Terraform Validation
@@ -92,8 +100,9 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           IMAGE_URI="${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}"
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
 
-          docker build -t $IMAGE_URI ${{ env.APP_DIR }}
+          docker build -t $IMAGE_URI $APP_DIR
           docker push $IMAGE_URI
 
       # Update ECS Task Definition and deploy
@@ -103,7 +112,7 @@ jobs:
           TASK_DEF=$(aws ecs describe-task-definition \
             --task-definition $TASK_FAMILY)
 
-          NEW_IMAGE="${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:${{ github.sha }}"
+          NEW_IMAGE="$IMAGE_URI"
 
           UPDATED=$(echo $TASK_DEF | jq \
             --arg IMAGE "$NEW_IMAGE" \
