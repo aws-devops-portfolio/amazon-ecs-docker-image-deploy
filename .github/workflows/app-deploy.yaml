@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+      
       - name: Set up environment name
         run: |
           if [[ $GITHUB_REF == "refs/heads/main" ]]; then
@@ -33,9 +35,7 @@ jobs:
           echo "ECR_REPOSITORY=$ENV-$CONTAINER_NAME-ecr" >> $GITHUB_ENV
           echo "ECS_CLUSTER=$ENV-$CONTAINER_NAME-cluster" >> $GITHUB_ENV
           echo "ECS_SERVICE=$ENV-$CONTAINER_NAME-service" >> $GITHUB_ENV
-          echo "TASK_FAMILY=task-definition-$ENV-$CONTAINER_NAME" >> $GITHUB_ENV         
-
-      - uses: actions/checkout@v3
+          echo "TASK_FAMILY=task-definition-$ENV-$CONTAINER_NAME" >> $GITHUB_ENV       
 
       - uses: actions/setup-java@v3
         with:

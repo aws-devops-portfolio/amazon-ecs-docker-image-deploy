@@ -13,11 +13,7 @@ permissions:
 
 jobs:
   terraform:
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: terraform
+    runs-on: ubuntu-latest   
 
     steps:
       - uses: actions/checkout@v4
@@ -30,6 +26,7 @@ jobs:
       - uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Apply
+        working-directory: terraform/environments/${{ env.ENV }}
         run: |
           cd terraform/environments/$ENV
           terraform init
