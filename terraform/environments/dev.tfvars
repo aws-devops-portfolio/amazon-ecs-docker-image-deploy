@@ -7,4 +7,5 @@ container_cpu      = 256
 container_memory   = 512
 desired_task_count = 1
 maximum_task_count = 2
+route53_hosted_zone = "mike71techsolutions.com"
 sub_domain_name    = "dev.products"

@@ -1,10 +1,9 @@
 data "aws_route53_zone" "main" {
-  name = "mike71techsolutions.com"
+  name = var.route53_hosted_zone
 }
 
 locals {
   env_app_prefix = "${var.environment}-${var.container_name}"
-  modukes_path = "../../modules"
 }
 
 module "network" {
@@ -20,7 +19,7 @@ module "iam" {
 }
 
 module "container_repository" {
-  source     = "../../modules/container_repository"
+  source     = "../../modules/container_repository" 
   app_prefix = local.env_app_prefix
 }
 
@@ -33,6 +32,7 @@ module "container_services" {
   ecs_task_sg_id     = module.security_groups.ecs_task_sg_id
   execution_role_arn = module.iam.execution_role_arn
   app_prefix         = local.env_app_prefix
+  environment        = var.environment
   container_port     = var.container_port
   container_memory   = var.container_memory
   desired_task_count = var.desired_task_count

@@ -1,16 +1,12 @@
-name: Application CI/CD
+name: Infrastructure and Application CI/CD
 
 on:
-  workflow_run:
-    workflows: ["Infrastructure CI/CD"]
-    types:
-      - completed
-      
   push:
     branches: 
       - main 
       - develop
   #  paths:
+  #    - "terraform/**"
   #    - "product-app/**"
   workflow_dispatch:
 
@@ -18,43 +14,65 @@ permissions:
   id-token: write
   contents: read
 
-env:
+env:  
   AWS_REGION: us-east-1  
   CONTAINER_NAME: product-app
+  TF_STATE_BUCKET: devhub164-state-demo
 
 jobs:
-  build-deploy:
-    if: |
-      github.event_name == 'push' ||
-      (github.event_name == 'workflow_run' && 
-        github.event.workflow_run.conclusion == 'success')       
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up environment name
         run: |
-          if [[ ${{ github.event_name }} == 'workflow_run' ]]; then
-            BRANCH="${{ github.event.workflow_run.head_branch }}"
-          else
-            BRANCH="$GITHUB_REF##*/}"
-          fi
-            
-          if [[ "$BRANCH" == "main" ]]; then
+          if [[ $GITHUB_REF == "refs/heads/main" ]]; then
             echo "ENV=prod" >> $GITHUB_ENV
           else
             echo "ENV=dev" >> $GITHUB_ENV
           fi
 
-      - name: Set up ECS variables
+      - name: Set up resource names
         run: |
           echo "ECR_REPOSITORY=$ENV-$CONTAINER_NAME-ecr" >> $GITHUB_ENV
           echo "ECS_CLUSTER=$ENV-$CONTAINER_NAME-cluster" >> $GITHUB_ENV
           echo "ECS_SERVICE=$ENV-$CONTAINER_NAME-service" >> $GITHUB_ENV
-          echo "TASK_FAMILY=task-definition-$ENV-$CONTAINER_NAME" >> $GITHUB_ENV       
+          echo "TASK_FAMILY=task-definition-$ENV-$CONTAINER_NAME" >> $GITHUB_ENV    
 
-      - uses: actions/setup-java@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/ECSFargateGitHubActionsRole
+          aws-region: ${{ env.AWS_REGION }}
+
+      # INFRASTRUCTURE (Terraform)
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Initialization
+        working-directory: terraform/environments/${{ env.ENV }}
+        run: |
+          echo "ENV is: ${{ env.ENV }}"
+          terraform init \
+            - backend-config="bucket=${{ env.TF_STATE_BUCKET }}" \
+            - backend-config="key=s3-github-actions/ecs/${{ env.ENV }}/terraform.tfstate" \
+            - backend-config="region=${{ env.AWS_REGION }}" \
+            - backend-config="use_lockfile=true"
+   
+      - name: Terraform Validation
+        working-directory: terraform/environments/${{ env.ENV }}
+        run: terraform validate
+
+      - name: Terraform Apply
+        working-directory: terraform/environments/${{ env.ENV }}
+        run: terraform apply -auto-approve -var-file=environments/${{ env.ENV }}.tfvars      
+
+      # Build the application 
+      - name: Set up Java
+        uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: 21
@@ -63,27 +81,18 @@ jobs:
         run: mvn clean package -DskipTests
         working-directory: ./product-app
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/ECSFargateGitHubActionsRole
-          aws-region: ${{ env.AWS_REGION }}
-
+      # Login to ECR
       - name: Login to ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build & Push Docker Image
-
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+      # Build and push Docker image to ECR
+      - name: Build and Push Docker Image
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-                       -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG          
-        working-directory: ./product-app
+          docker build -t ${{ env.ECR_REPOSITORY }} .
+          docker push ${{ env.ECR_REPOSITORY }}
 
+      # Update ECS Task Definition and deploy
       - name: Update ECS Task Definition
         id: task-def
         run: |
