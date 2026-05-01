@@ -82,7 +82,6 @@ jobs:
       - name: Terraform Validation
         working-directory: ${{ env.TERRAFORM_DIR }}
         run: |
-          terraform init -backend=false
           terraform validate
 
     # APPLY (real backend already initialized)
