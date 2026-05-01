@@ -69,20 +69,26 @@ jobs:
           echo "Tree:"
           find . -maxdepth 2 -type f
 
+     # INIT (real backend)
       - name: Terraform Initialization
         working-directory: ${{ env.TERRAFORM_DIR }}
-        run: |  
-          echo "ENV is: $ENV"        
+        run: |
           terraform init -reconfigure \
-            -backend-config=backend-$ENV.hcl
-   
+          -backend-config="bucket=$TF_STATE_BUCKET" \
+          -backend-config="key=s3-github-actions/ecs/$ENV/terraform.tfstate" \
+          -backend-config="region=$AWS_REGION"
+
+    # VALIDATE (no backend)
       - name: Terraform Validation
         working-directory: ${{ env.TERRAFORM_DIR }}
-        run: terraform validate
+        run: |
+          terraform init -backend=false
+          terraform validate
 
+    # APPLY (real backend already initialized)
       - name: Terraform Apply
         working-directory: ${{ env.TERRAFORM_DIR }}
-        run: terraform apply -auto-approve -var-file=environments/${{ env.ENV }}.tfvars      
+        run: terraform apply -auto-approve -var-file=environments/$ENV.tfvars      
 
       # Build the application 
       - name: Set up Java
