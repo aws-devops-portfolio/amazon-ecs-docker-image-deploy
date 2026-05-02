@@ -43,6 +43,11 @@ variable "maximum_task_count" {
   description = "Maximum task count" 
 }
 
+variable "route53_hosted_zone" {
+  type        = string
+  description = "Route53 hosted zone name"   
+}
+
 variable "sub_domain_name" {
   type        = string
   description = "Sub domain name" 

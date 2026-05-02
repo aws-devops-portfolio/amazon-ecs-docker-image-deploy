@@ -1,31 +1,30 @@
 data "aws_route53_zone" "main" {
-  name = "mike71techsolutions.com"
+  name = var.route53_hosted_zone
 }
 
 locals {
   env_app_prefix = "${var.environment}-${var.container_name}"
-  modukes_path = "../../modules"
 }
 
 module "network" {
-  source     = "../../modules/network"
+  source     = "./modules/network"
   vpc_cidr   = var.vpc_cidr
   vpce_sg_id = module.security_groups.vpce_sg_id
   app_prefix = local.env_app_prefix
 }
 
 module "iam" {
-  source     = "../../modules/iam"
+  source     = "./modules/iam"
   app_prefix = local.env_app_prefix
 }
 
 module "container_repository" {
-  source     = "../../modules/container_repository"
+  source     = "./modules/container_repository" 
   app_prefix = local.env_app_prefix
 }
 
 module "container_services" {
-  source             = "../../modules/container_services"
+  source             = "./modules/container_services"
   target_group_arn   = module.load_balancer.target_group_arn
   task_role_arn      = module.iam.task_role_arn
   private_subnets    = module.network.private_subnet_ids
@@ -45,14 +44,14 @@ module "container_services" {
 }
 
 module "security_groups" {
-  source         = "../../modules/security_groups"
+  source         = "./modules/security_groups"
   vpc_id         = module.network.vpc_id
   container_port = var.container_port
   app_prefix     = local.env_app_prefix
 }
 
 module "load_balancer" {
-  source            = "../../modules/load_balancer"
+  source            = "./modules/load_balancer"
   vpc_id            = module.network.vpc_id
   subnets           = module.network.public_subnet_ids
   alb_sg_id         = module.security_groups.alb_sg_id
